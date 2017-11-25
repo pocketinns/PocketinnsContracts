@@ -13,3 +13,5 @@ The PINNS token auction will follow the **reverse Dutch Auction**, in which an i
 * contributions are accepted by sending Ether to **DutchAuction** contract address. Minimum contribution is 1 Ether.
 * in case of emergency, function **setStage()** can be called by owner to set stage in order to stop contribution or to start crowdasle again.
 * contributors will need to claim their tokens after **DutchAuction** has ended. To claim tokens contributor needs to call function **claimTokensICO()**,by passing the contributor address as parameter.
+* after the ICO ends, owner of the contract sends the GoodWill tokens to **DutchAuction** contract and call function **startGoodwillDistribution()**.
+* to claim Goodwill tokens as per the tokens bought during the first Four days of ICO, contributor needs to call **claimGoodwillTokens()**, by passing the contributor address as parameter. 
