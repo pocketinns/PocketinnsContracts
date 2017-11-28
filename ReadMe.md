@@ -4,7 +4,7 @@
 
 
 # README #
-## About Pocketinns  [![chat](https://img.shields.io/badge/chat%20on-slack-green.svg)](http://www.slack.com)   [![chat](https://img.shields.io/badge/chat%20on-telegram-green.svg)](http://www.telegram.com)
+## About Pocketinns  [![chat](https://img.shields.io/badge/chat%20on-slack-green.svg)](http://www.slack.com)   [![chat](https://img.shields.io/badge/chat%20on-telegram-green.svg)](http://www.telegram.org)
 
 
 
