@@ -343,7 +343,7 @@ contract pinnsDutchAuction
             require (pinnsToken.balanceOf(address(this)) != 0);
             stage = Stages.goodwillDistributionStarted;
         }
-        
+        // goodwill token need to be updated..
         function claimGoodwillTokens(address receiver)
         atStage(Stages.goodwillDistributionStarted)
         public
