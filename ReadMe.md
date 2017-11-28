@@ -4,7 +4,9 @@
 
 
 # README #
-## About Pocketinns
+## About Pocketinns  [![chat](https://img.shields.io/badge/chat%20on-slack-green.svg)](http://www.slack.com)   [![chat](https://img.shields.io/badge/chat%20on-telegram-green.svg)](http://www.telegram.com)
+
+
 
 The **Pocketinns Umbrella Project** is a revolutionary online community driven **marketplace ecosystem** built around a decentralized blockchain-oriented model. It is a marketplace for both sellers and consumers. It is designed to enhance ease of transactions while maximizing trust, safety, value, and savings, all while maintaining a true decentralized network.
 
