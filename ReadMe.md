@@ -1,8 +1,20 @@
 ﻿# ICO pocketinns #
 
+<img src="https://pocketinns.io/img/logo.png" width="300" height="100"/>
+
 
 # README #
+## About Pocketinns
+
+The **Pocketinns Umbrella Project** is a revolutionary online community driven **marketplace ecosystem** built around a decentralized blockchain-oriented model. It is a marketplace for both sellers and consumers. It is designed to enhance ease of transactions while maximizing trust, safety, value, and savings, all while maintaining a true decentralized network.
+
+http://www.pocketinns.io
+
+
+
 ## Token Auction
+**The token auction will start on January 15th, 2018 (10am EST)** and the auction ends on January 31st, 2018 (10am EST) and will accept ETH as a form of funding.
+
 The PINNS token auction will follow the **reverse Dutch Auction**, in which an initially high offering price is lowered by increments until a buyer or, as in U.S. Treasury sales of securities, sufficient buyers are found.
 ## For CrowdSale
 * First deploy **DutchAuction** contract by providing EtherPriceFactor (Price of 1 Ether in USD),and obtain its address.
