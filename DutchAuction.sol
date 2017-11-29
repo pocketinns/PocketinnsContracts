@@ -20,9 +20,9 @@ contract PocketinnsToken is Token {
     /*
      *  Token meta data
      */
-    string constant public name = "Pocketinns Token";
-    string constant public symbol = "Pinns";
-    uint8 constant public decimals = 18;
+    // string constant public name = "Pocketinns Token";
+    // string constant public symbol = "Pinns";
+    // uint8 constant public decimals = 18;
     address public owner;
     address public dutchAuctionAddress;
     
