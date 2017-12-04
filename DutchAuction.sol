@@ -1,68 +1,7 @@
 import "./StandardERC20.sol"
 pragma solidity 0.4.18;
 
-<<<<<<< HEAD
 contract pinnsDutchAuction is PocketinnsToken
-=======
-/// @title Abstract token contract - Functions to be implemented by token contracts.
-contract Token {
-
-    uint public totalSupply;
-    function totalSupply() public constant returns(uint total_Supply);
-    function balanceOf(address who) public constant returns(uint256);
-    function allowance(address owner, address spender) public constant returns(uint);
-    function transferFrom(address from, address to, uint value) public returns(bool ok);
-    function approve(address spender, uint value) public returns(bool ok);
-    function transfer(address to, uint value)public returns(bool ok);
-    event Transfer(address indexed from, address indexed to, uint value);
-    event Approval(address indexed owner, address indexed spender, uint value);
-}
-
-/// @title Standard token contract - Standard token interface implementation.
-contract PocketinnsToken is Token {
-
-    /*
-     *  Token meta data
-     */
-    // string constant public name = "Pocketinns Token";
-    // string constant public symbol = "Pinns";
-    // uint8 constant public decimals = 18;
-    address public owner;
-    address public dutchAuctionAddress;
-    
-     modifier onlyForDutchAuctionContract() {
-        if (msg.sender != dutchAuctionAddress)
-            // Only owner is allowed to proceed
-            revert();
-        _;
-    }
-    
-    
-    /*
-     *  Data structures
-     */
-    mapping (address => uint256) balances;
-    mapping (address => mapping (address => uint256)) allowed;
-    uint256 public totalSupply;
-
-    /*
-     *  Public functions
-     */
- 
-    
-    function PocketinnsToken(address dutchAuction) public
-    {
-        owner = msg.sender;
-        totalSupply = 150000000 * 10**18;
-        balances[dutchAuction] = 30000000 * 10**18;
-        balances[owner] = 120000000 * 10**18;
-        dutchAuctionAddress = dutchAuction;  // we have stored the dutch auction contract address for burning tokens present after ITO
-    }
-    
-    function burnLeftItoTokens(uint _burnValue)
-    public
-    onlyForDutchAuctionContract
->>>>>>> 38e04c795632e107eae675a81e6e7f81d52e4fa0
     {
 
     uint constant public MAX_TOKENS = 30000000 * 10**18; // 30M pinns Token
