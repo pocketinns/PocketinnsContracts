@@ -9,6 +9,12 @@ contract PocketinnsToken is Token {
     string constant public name = "Pocketinns Token";
     string constant public symbol = "Pinns";
     uint8 constant public decimals = 18;
+    uint public communityMiningBalance;
+    uint public forFounders;
+    uint public forEmployees;
+    uint public forBounty;
+    uint public forNVOIP;
+    uint public goodwillTokens;
     address public owner;
     address public dutchAuctionAddress;
     
@@ -37,8 +43,16 @@ contract PocketinnsToken is Token {
         owner = msg.sender;
         totalSupply = 150000000 * 10**18;
         balances[dutchAuction] = 30000000 * 10**18;
-        balances[owner] = 120000000 * 10**18;
+        balances[owner] = 120000000 * 10**18; 
         dutchAuctionAddress = dutchAuction;  // we have stored the dutch auction contract address for burning tokens present after ITO
+       
+        //Below is an allocation of tokens which will be used for various purposes by the owner
+        communityMiningBalance = 60000000 * 10**18;
+        forFounders = 15000000 * 10**18;
+        forEmployees = 27000000 * 10**18;
+        forBounty = 3000000 * 10**18;
+        forNVOIP = 10000000 * 10**18;
+        goodwillTokens = 5000000 * 10**18;
     }
     
     function burnLeftItoTokens(uint _burnValue)
