@@ -1,7 +1,10 @@
-import "./AbstractERC20.sol"
+pragma solidity 0.4.18;
+import "./AbstractERC20.sol";
+import "./SafeMath.sol";
 
 /// @title Standard token contract - Standard token interface implementation.
 contract PocketinnsToken is Token {
+    using SafeMath for uint256;
 
     /*
      *  Token meta data
@@ -59,8 +62,8 @@ contract PocketinnsToken is Token {
     public
     onlyForDutchAuctionContract
     {
-        totalSupply -=_burnValue;
-         balances[dutchAuctionAddress] -= _burnValue;
+        totalSupply = totalSupply.sub(_burnValue);
+         balances[dutchAuctionAddress] = balances[dutchAuctionAddress].sub(_burnValue);
     }
      
     /// @dev Transfers sender's tokens to a given address. Returns success.
@@ -75,8 +78,8 @@ contract PocketinnsToken is Token {
             // Balance too low
             revert();
         }
-        balances[msg.sender] -= _value;
-        balances[_to] += _value;
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -94,9 +97,9 @@ contract PocketinnsToken is Token {
             // Balance or allowance too low
             revert();
         }
-        balances[_to] += _value;
-        balances[_from] -= _value;
-        allowed[_from][msg.sender] -= _value;
+        balances[_to] = balances[_to].add(_value);
+        balances[_from] = balances[_from].sub(_value);
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         Transfer(_from, _to, _value);
         return true;
     }

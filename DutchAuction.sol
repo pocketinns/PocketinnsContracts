@@ -1,9 +1,13 @@
-import "./StandardERC20.sol"
 pragma solidity 0.4.18;
 
-contract pinnsDutchAuction is PocketinnsToken
-    {
+import './SafeMath.sol';
 
+import './StandardERC20.sol';
+
+
+contract pinnsDutchAuction {
+    using SafeMath for uint256;
+    
     uint constant public MAX_TOKENS = 30000000 * 10**18; // 30M pinns Token
     uint constant public minimumInvestment = 1 * 10**18; // 1 ether is minimum minimumInvestment        
     uint constant public goodwillTokensAmount = 5000000 * 10**18; // 5M pinns Token
@@ -51,7 +55,8 @@ contract pinnsDutchAuction is PocketinnsToken
     uint256 public currentPerTokenPrice;   
     uint256 public finalPrice;
     uint256 public totalTokensSold;
-    
+    uint256 constant price1  = 2500;
+    uint256 constant price2  = 900;
     mapping (address => uint256) public noBonusDays;
     mapping (address => uint256) public itoBids;
     event ito(address investor, uint256 amount, string day);
@@ -125,22 +130,22 @@ contract pinnsDutchAuction is PocketinnsToken
                 finalizeAuction();
             }
                 
-            totalReceived += msg.value;       
+            totalReceived = totalReceived.add(msg.value);       
             getCurrentPrice();
             setInvestment(msg.sender,msg.value);
         }
         
         function getCurrentPrice() public
         {
-            totalTokensSold = ((totalReceived * priceFactor)/currentPerTokenPrice)*100;
-            uint256 priceCalculationFactor = (block.timestamp - startItoTimestamp)/43200;
+            totalTokensSold = ((totalReceived.mul(priceFactor.mul(100))).div(currentPerTokenPrice));
+            uint256 priceCalculationFactor = (block.timestamp.sub(startItoTimestamp)).div(1800);
             if(priceCalculationFactor <=16)
             {
-                currentPerTokenPrice = 2500 - (priceCalculationFactor * 100);
+                currentPerTokenPrice = (price1).sub(priceCalculationFactor.mul(100));
             }
             else if (priceCalculationFactor > 16 && priceCalculationFactor <= 31)
             {
-                currentPerTokenPrice = 900 - (((priceCalculationFactor * 100) - 1600)/2);
+                currentPerTokenPrice = (price2).sub((((priceCalculationFactor.mul(100)).sub(1600))).div(2));
             }
         }
         
@@ -149,14 +154,14 @@ contract pinnsDutchAuction is PocketinnsToken
             if (currentPerTokenPrice >=1800)
             {
                 goodwillBonusStatus[investor] = true;
-                bonusTokens[investor] += (amount * priceFactor*100) / (currentPerTokenPrice);
+                bonusTokens[investor] = bonusTokens[investor].add((amount.mul(priceFactor.mul(100))).div(currentPerTokenPrice));
                 bonusRecipientCount++;   // will be used later for goodwill token distribution
-                itoBids[investor] += amount;     // will be used for ITO token distribution
+                itoBids[investor] = itoBids[investor].add(amount);     // will be used for ITO token distribution
                 ito(investor,amount,"Bonus days");
             }
             else if(currentPerTokenPrice < 1800)
             {
-                itoBids[investor] += amount;     // will be used for ITO token distribution
+                itoBids[investor] = itoBids[investor].add(amount);     // will be used for ITO token distribution
                 noBonusDays[investor] = amount;
                 ito(investor,amount,"5th day or after");
             }
@@ -164,7 +169,7 @@ contract pinnsDutchAuction is PocketinnsToken
         
         function finalizeAuction() private
         {
-            uint256 leftTokens = MAX_TOKENS - totalTokensSold;
+            uint256 leftTokens = MAX_TOKENS.sub(totalTokensSold);
             finalPrice = currentPerTokenPrice;
             pinnsToken.burnLeftItoTokens(leftTokens);
             stage = Stages.AuctionEnded;
@@ -180,7 +185,7 @@ contract pinnsDutchAuction is PocketinnsToken
             receiver = msg.sender;
             if(itoBids[receiver] >0)
             {
-            uint256 tokenCount = (itoBids[receiver] * priceFactor*100) / (finalPrice);
+            uint256 tokenCount = (itoBids[receiver].mul(priceFactor.mul(100))).div(finalPrice);
             itoBids[receiver] = 0;
             pinnsToken.transfer(receiver, tokenCount);
             }
@@ -243,5 +248,3 @@ contract pinnsDutchAuction is PocketinnsToken
             stage = Stages.goodwillDistributionStarted;
         }
     }
-    
-    
