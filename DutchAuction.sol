@@ -59,6 +59,7 @@ contract pinnsDutchAuction {
     uint256 constant price2  = 900;
     mapping (address => uint256) public noBonusDays;
     mapping (address => uint256) public itoBids;
+    mapping (address => bool) whitelisted;
     event ito(address investor, uint256 amount, string day);
     
      /*
@@ -138,7 +139,7 @@ contract pinnsDutchAuction {
         function getCurrentPrice() public
         {
             totalTokensSold = ((totalReceived.mul(priceFactor.mul(100))).div(currentPerTokenPrice));
-            uint256 priceCalculationFactor = (block.timestamp.sub(startItoTimestamp)).div(1800);
+            uint256 priceCalculationFactor = (block.timestamp.sub(startItoTimestamp)).div(43200);
             if(priceCalculationFactor <=16)
             {
                 currentPerTokenPrice = (price1).sub(priceCalculationFactor.mul(100));
@@ -183,6 +184,7 @@ contract pinnsDutchAuction {
         {
             if (receiver == 0)
             receiver = msg.sender;
+            require(whitelisted[receiver] == true);
             if(itoBids[receiver] >0)
             {
             uint256 tokenCount = (itoBids[receiver].mul(priceFactor.mul(100))).div(finalPrice);
@@ -191,6 +193,9 @@ contract pinnsDutchAuction {
             }
         }
         
+       function setWhiteListAddresses(address _investor) external isOwner{
+           whitelisted[_investor] = true;
+       }
        
         // goodwill tokens are sent to the contract by the owner
         function startGoodwillDistribution()
