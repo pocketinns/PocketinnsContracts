@@ -108,7 +108,7 @@ contract pinnsDutchAuction {
         require (pinnsToken.balanceOf(address(this)) == MAX_TOKENS);
         stage = Stages.AuctionStarted;
         startItoTimestamp = block.timestamp;
-        startPricePerToken = 2500;  //2500 cents is the starting price
+
         currentPerTokenPrice = startPricePerToken;
         }
         
@@ -124,12 +124,6 @@ contract pinnsDutchAuction {
             )
                 finalizeAuction();
                 
-              
-            if((block.timestamp - startItoTimestamp) >=16 days)
-            {
-                currentPerTokenPrice = 150;
-                finalizeAuction();
-            }
                 
             totalReceived = totalReceived.add(msg.value);       
             getCurrentPrice();
