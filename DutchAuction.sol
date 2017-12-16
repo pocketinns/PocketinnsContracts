@@ -55,8 +55,6 @@ contract pinnsDutchAuction {
     uint256 public currentPerTokenPrice;   
     uint256 public finalPrice;
     uint256 public totalTokensSold;
-    uint256 constant price1  = 2500;
-    uint256 constant price2  = 900;
     mapping (address => uint256) public noBonusDays;
     mapping (address => uint256) public itoBids;
     mapping (address => bool) whitelisted;
@@ -190,7 +188,6 @@ contract pinnsDutchAuction {
        function setWhiteListAddresses(address _investor) external isOwner{
            whitelisted[_investor] = true;
        }
-       
         // goodwill tokens are sent to the contract by the owner
         function startGoodwillDistribution()
         external
