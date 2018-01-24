@@ -1,13 +1,10 @@
-pragma solidity 0.4.18;
-
-import './SafeMath.sol';
+pragma solidity 0.4.19;
 
 import './StandardERC20.sol';
 
 
 contract pinnsDutchAuction {
     using SafeMath for uint256;
-    
     uint constant public MAX_TOKENS = 30000000 * 10**18; // 30M pinns Token
     uint constant public minimumInvestment = 1 * 10**18; // 1 ether is minimum minimumInvestment        
     uint constant public goodwillTokensAmount = 5000000 * 10**18; // 5M pinns Token
@@ -54,10 +51,13 @@ contract pinnsDutchAuction {
     uint256 public startPricePerToken;
     uint256 public currentPerTokenPrice;   
     uint256 public finalPrice;
+    uint256 public totalBounsTokens;
     uint256 public totalTokensSold;
+    uint256 constant price1  = 2500;
+    uint256 constant price2  = 900;
     mapping (address => uint256) public noBonusDays;
     mapping (address => uint256) public itoBids;
-    mapping (address => bool) whitelisted;
+    mapping (address => bool) public whitelisted;
     event ito(address investor, uint256 amount, string day);
     
      /*
@@ -106,7 +106,7 @@ contract pinnsDutchAuction {
         require (pinnsToken.balanceOf(address(this)) == MAX_TOKENS);
         stage = Stages.AuctionStarted;
         startItoTimestamp = block.timestamp;
-
+        startPricePerToken = 2500;  //2500 cents is the starting price
         currentPerTokenPrice = startPricePerToken;
         }
         
@@ -115,13 +115,12 @@ contract pinnsDutchAuction {
         payable 
         atStage(Stages.AuctionStarted)
         {
-            require (msg.value >= minimumInvestment);
+            require (msg.value >= minimumInvestment && (block.timestamp - startItoTimestamp) <=16 days);
           
             if (((msg.value * priceFactor *100)/currentPerTokenPrice) >= (MAX_TOKENS - totalTokensSold) ||
-            totalReceived >= 149000 * 10**18  //checks 46 million dollar hardcap considering 1 eth=300dollar
+            totalReceived >= 40636 * 10**18  //checks 46 million dollar hardcap considering 1 eth=1132dollar
             )
                 finalizeAuction();
-                
                 
             totalReceived = totalReceived.add(msg.value);       
             getCurrentPrice();
@@ -148,6 +147,8 @@ contract pinnsDutchAuction {
             {
                 goodwillBonusStatus[investor] = true;
                 bonusTokens[investor] = bonusTokens[investor].add((amount.mul(priceFactor.mul(100))).div(currentPerTokenPrice));
+                totalBounsTokens = totalBounsTokens.add(bonusTokens[investor]);
+                fourDaysRecieved = fourDaysRecieved.add(amount); 
                 bonusRecipientCount++;   // will be used later for goodwill token distribution
                 itoBids[investor] = itoBids[investor].add(amount);     // will be used for ITO token distribution
                 ito(investor,amount,"Bonus days");
@@ -162,6 +163,17 @@ contract pinnsDutchAuction {
         
         function finalizeAuction() private
         {
+            finalPrice = currentPerTokenPrice;
+            totalTokensSold = ((totalReceived.mul(priceFactor.mul(100))).div(currentPerTokenPrice));
+            uint256 leftTokens = MAX_TOKENS.sub(totalTokensSold);
+            pinnsToken.burnLeftItoTokens(leftTokens);
+            stage = Stages.AuctionEnded;
+        }
+        
+         function finalizeAuctionOwner(uint256 finaltokenprice) external isOwner
+        {
+            currentPerTokenPrice = finaltokenprice;
+            totalTokensSold = ((totalReceived.mul(priceFactor.mul(100))).div(currentPerTokenPrice));
             uint256 leftTokens = MAX_TOKENS.sub(totalTokensSold);
             finalPrice = currentPerTokenPrice;
             pinnsToken.burnLeftItoTokens(leftTokens);
@@ -172,22 +184,23 @@ contract pinnsDutchAuction {
         //It can be also used to claim on behalf of any investor
         function claimTokensICO(address receiver) public
         atStage(Stages.AuctionEnded)
-        isValidPayload
+        // isValidPayload
         {
-            if (receiver == 0)
-            receiver = msg.sender;
-            require(whitelisted[receiver] == true);
-            if(itoBids[receiver] >0)
-            {
+            // if (receiver == 0)
+            // receiver = msg.sender;
+            require(whitelisted[receiver]);
+            require(itoBids[receiver] >0);
+            
             uint256 tokenCount = (itoBids[receiver].mul(priceFactor.mul(100))).div(finalPrice);
             itoBids[receiver] = 0;
             pinnsToken.transfer(receiver, tokenCount);
-            }
+            
         }
         
        function setWhiteListAddresses(address _investor) external isOwner{
            whitelisted[_investor] = true;
        }
+       
         // goodwill tokens are sent to the contract by the owner
         function startGoodwillDistribution()
         external
@@ -205,22 +218,27 @@ contract pinnsDutchAuction {
         {
             if (receiver == 0)
             receiver = msg.sender;
-            if(goodwillBonusStatus[msg.sender] == true)
+            if(goodwillBonusStatus[receiver] == true)
             {
-                goodwillBonusStatus[msg.sender] = false;
-                uint bonus = bonusTokens[msg.sender];
-                pinnsToken.transfer(msg.sender, bonus);
+                goodwillBonusStatus[receiver] = false;
+                uint bonus = bonusTokens[receiver];
+                pinnsToken.transfer(receiver, bonus);
+                bonusTokens[receiver] = 0;
             }
         }
         
         function drain() 
         external 
         isOwner
-        atStage(Stages.AuctionEnded)
         {
             owner.transfer(this.balance);
         }
         
+        function drainToken() external isOwner{
+           uint256 dutchbalance=  pinnsToken.balanceOf(address(this));
+            pinnsToken.transfer(owner, dutchbalance);
+            
+        }
         //In case of emergency the state can be reset by the owner of the smart contract
         //Intention here is providing an extra protection to the Investor's funds
         // 1. AuctionDeployed,
@@ -232,15 +250,15 @@ contract pinnsDutchAuction {
         external
         isOwner
         {
-            if(state == 1)
+            if(state == 0)
             stage = Stages.AuctionDeployed;
-            else if (state == 2)
+            else if (state == 1)
             stage = Stages.AuctionSetUp;
-            else if (state == 3)
+            else if (state == 2)
             stage = Stages.AuctionStarted;
-            else if (state == 4)
+            else if (state == 3)
             stage = Stages.AuctionEnded;
-            else if (state == 5)
+            else if (state == 4)
             stage = Stages.goodwillDistributionStarted;
         }
     }
