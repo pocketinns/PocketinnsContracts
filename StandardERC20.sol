@@ -1,6 +1,6 @@
-pragma solidity 0.4.18;
+pragma solidity 0.4.19;
 import "./AbstractERC20.sol";
-import "./SafeMath.sol";
+import "./safemath.sol";
 
 /// @title Standard token contract - Standard token interface implementation.
 contract PocketinnsToken is Token {
@@ -56,6 +56,8 @@ contract PocketinnsToken is Token {
         forBounty = 3000000 * 10**18;
         forNVOIP = 10000000 * 10**18;
         goodwillTokens = 5000000 * 10**18;
+         Transfer(0, owner, balances[owner]);
+        Transfer(0, dutchAuction, balances[dutchAuction]);
     }
     
     function burnLeftItoTokens(uint _burnValue)
